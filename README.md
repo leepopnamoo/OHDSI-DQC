@@ -27,9 +27,13 @@
 
 ## SQL 사용방법 
 1. 스키마를 설정 
-``` @set schema_name = {schema name of cdm};      
+``` 
+@set schema_name = {schema name of cdm};      
+```
 2. 설정된 스키마 확인 
-``` select '${schema_name}'; 
+``` 
+select '${schema_name}'; 
+```
 
 ### copywrite@ fingertree@gmail.com  
 
