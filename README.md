@@ -19,7 +19,7 @@
 
 ## 검증룰 적용 기본요건 
 1. OHDSI DDL 정의기준을 준수 
-2. 기본키, 참조키 정의 준수 
+2. 기본키, 참조키, 인덱스 정의 준수 
 
 ## SQL 사용환경 
 1. PostgreSQL 환경 
@@ -27,14 +27,20 @@
    PostgreSQL 13.3 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.3.1 20191121 (Red Hat 8.3.1-5), 64-bit
 
 ## SQL 사용방법 
-1. 스키마를 설정 
+1. OHDSI_DQC.sql 다운로드 
+2. 스키마를 설정 
 ``` 
 @set schema_name = {schema name of cdm};      
 ```
-2. 설정된 스키마 확인 
+3. 설정된 스키마 확인 
 ``` 
 select '${schema_name}'; 
 ```
+
+## 참고 
+1. 시스템 성능에 따라서 실행계획을 세우고 검증하시십시오. 
+2. 모든 테이블을 참조 검증하는 SQL로 시스템에 많은 부하가 발생합니다. 
+3. 본 프로그램은 사용제한은 없으나 본 사이트외 공유는 허용하지 않습니다. 
 
 ### by fingertree@gmail.com  
 
