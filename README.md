@@ -1,4 +1,5 @@
-# OHDSI-DQC 
+# OHDSI CDM DQC 
+# Common Data Model 
 
 ## OHDSI CDM 검증SQL 생성 및 검증  
 
@@ -35,5 +36,5 @@
 select '${schema_name}'; 
 ```
 
-### copywrite@ fingertree@gmail.com  
+### by fingertree@gmail.com  
 
