@@ -1,33 +1,33 @@
 -- ------------------------------ 
 -- CDM DQ Script  
 -- ------------------------------
--- description :: OHDSI CDM ±âº» ½ºÅ°¸¶ ¹× µ¥ÀÌÅÍ Á¡°Ë SQLÀÔ´Ï´Ù. Primary key, Foreign Key ¼³Á¤µî CDM Doc¿¡¼­ Á¤ÀÇÇÑ 
---                ±âÁØÀ¸·Î ¼³Á¤µÇ¾î ÀÖÀ½À» ÀüÁ¦·Î ÇÏ¿© Á¡°ËÇÏ°Ô µË´Ï´Ù. CDM Ç¥ÁØÀ» µû¸£Áö ¾ÊÀ¸¸é Á¡°ËÀÌ Á¤»óÀûÀ¸·Î µÇÁö ¾Ê½À´Ï´Ù. 
+-- description :: OHDSI CDM ê¸°ë³¸ ìŠ¤í‚¤ë§ˆ ë° ë°ì´í„° ì ê²€ SQLìž…ë‹ˆë‹¤. Primary key, Foreign Key ì„¤ì •ë“± CDM Docì—ì„œ ì •ì˜í•œ 
+--                ê¸°ì¤€ìœ¼ë¡œ ì„¤ì •ë˜ì–´ ìžˆìŒì„ ì „ì œë¡œ í•˜ì—¬ ì ê²€í•˜ê²Œ ë©ë‹ˆë‹¤. CDM í‘œì¤€ì„ ë”°ë¥´ì§€ ì•Šìœ¼ë©´ ì ê²€ì´ ì •ìƒì ìœ¼ë¡œ ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤. 
 -- create date :: 2022.05 
 -- edited date :: 2022.06 
--- DB Á¤ÀÇ¼­ 
--- Table Á¤ÀÇ¼­ 
--- ÄÃ·³ Á¤ÀÇ¼­
--- Domain Á¤ÀÇ¼­ 
--- ¾÷¹«±ÔÄ¢ ¸ðÁý´Ü ±âÁØ, ±â°£ µîµî ÄÚµå ±âÁØ. 
--- Schema°ËÁõ 15°³, °³³ä°ËÁõ 33°³ 
--- copywrite@ fingertree@gmail.com  
+-- DB ì •ì˜ì„œ 
+-- Table ì •ì˜ì„œ 
+-- ì»¬ëŸ¼ ì •ì˜ì„œ
+-- Domain ì •ì˜ì„œ 
+-- ì—…ë¬´ê·œì¹™ ëª¨ì§‘ë‹¨ ê¸°ì¤€, ê¸°ê°„ ë“±ë“± ì½”ë“œ ê¸°ì¤€. 
+-- Schemaê²€ì¦ 15ê°œ, ê°œë…ê²€ì¦ 33ê°œ 
+-- copyright@ fingertree@gmail.com  
 -- -------------------------------
 
--- ½ºÅ°¸¶¸¦ ¼³Á¤ÇÏ¼¼¿ä 
+-- ìŠ¤í‚¤ë§ˆë¥¼ ì„¤ì •í•˜ì„¸ìš” 
 --@set schema_name = schema name of cdm    
 @set schema_name = cdmcloud 
 
 select '${schema_name}';
 
--- 1. Å×ÀÌºí Ä®·³¼ö 1ÃÊ°ú Å×ÀÌºí  :: obj_description(oid) Å×ÀÌºí ÄÚ¸àÆ® Ãß°¡ :: ÁÖ¼®Àº Å¸ÀÌÆ²°ú ¼³¸íÀ» |À¸·Î ºÐ¸® Àû¿ë
+-- 1. í…Œì´ë¸” ì¹¼ëŸ¼ìˆ˜ 1ì´ˆê³¼ í…Œì´ë¸”  :: obj_description(oid) í…Œì´ë¸” ì½”ë©˜íŠ¸ ì¶”ê°€ :: ì£¼ì„ì€ íƒ€ì´í‹€ê³¼ ì„¤ëª…ì„ |ìœ¼ë¡œ ë¶„ë¦¬ ì ìš©
 select t.schemaname, t.relname, split_part(obj_description(c.oid), '|', 1) as title, split_part(obj_description(c.oid), '|', 2) as description, t.n_live_tup  
 from pg_catalog.pg_stat_user_tables t join pg_catalog.pg_class c on (c.relnamespace::regnamespace::text = t.schemaname and c.relname = t.relname and c.relkind = 'r')
 where t.schemaname = '${schema_name}'  
 and t.n_live_tup > 1 
 order by 3 ;
 
--- 2. Å×ÀÌºíº° Ä®·³Çü½Ä ¸ñ·Ï - table column data type 
+-- 2. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼í˜•ì‹ ëª©ë¡ - table column data type 
 select i.table_name, i.ordinal_position, i.column_name, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 1) AS title, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 2) AS description, i.is_nullable, i.data_type, i.udt_name    
@@ -37,7 +37,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables u where i.table_name = 
              and u.n_live_tup > 1 )
 order by 1, 2;
 
--- 3. Å×ÀÌºíº° Ä®·³Çü½Ä - Not Null Ä®·³ 
+-- 3. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼í˜•ì‹ - Not Null ì¹¼ëŸ¼ 
 select i.table_name, i.ordinal_position, i.column_name, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 1) AS title, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 2) AS description, i.is_nullable, i.data_type, i.udt_name    
@@ -48,7 +48,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
              and a.n_live_tup > 1 )
 order by 1, 2;
 
--- 4. Å×ÀÌºíº° Ä®·³Çü½Ä - time or date Ä®·³ 
+-- 4. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼í˜•ì‹ - time or date ì¹¼ëŸ¼ 
 select i.table_name, i.ordinal_position, i.column_name, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 1) AS title, 
        split_part((SELECT col_description(a.attrelid, a.attnum)), '|', 2) AS description, i.is_nullable, i.data_type, i.udt_name     
@@ -59,7 +59,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
              and a.n_live_tup > 1 )
 order by 1, 2;
 
--- 5. µ¥ÀÌÅÍ Å¸ÀÔº° Ä®·³ °¹¼ö 1 
+-- 5. ë°ì´í„° íƒ€ìž…ë³„ ì¹¼ëŸ¼ ê°¯ìˆ˜ 1 
 select i.data_type, i.udt_name, count(1) as totalcnt     
 from information_schema."columns" i
 where i.table_schema = '${schema_name}'
@@ -68,7 +68,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
 group by 1, 2
 order by 3;
 
--- 6. µ¥ÀÌÅÍ Å¸ÀÔº° Ä®·³ °¹¼ö 2
+-- 6. ë°ì´í„° íƒ€ìž…ë³„ ì¹¼ëŸ¼ ê°¯ìˆ˜ 2
 select i.data_type, count(1) as total      
 from information_schema."columns" i
 where i.table_schema = '${schema_name}'
@@ -77,7 +77,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
 group by 1 
 ;
 
--- 7. ÃÑÄ®·³°¹¼ö 239 
+-- 7. ì´ì¹¼ëŸ¼ê°¯ìˆ˜ 239 
 with col as (
 	select i.table_name, count(1) as column_count 
 	from information_schema."columns" i where i.table_schema = '${schema_name}'
@@ -87,7 +87,7 @@ with col as (
 )
 select sum(column_count) from col;
 
--- 8. Å×ÀÌºíº° Ä®·³°¹¼ö µ¥ÀÌÅÍ 1°³ ÃÊ°ú  
+-- 8. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼ê°¯ìˆ˜ ë°ì´í„° 1ê°œ ì´ˆê³¼  
 select i.table_name, count(1) as column_count 
 from information_schema."columns" i
 where i.table_schema = '${schema_name}' 
@@ -95,7 +95,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
              and a.n_live_tup > 1 )
 GROUP by i.table_name order by column_count desc; 
 
--- 6. ½ºÅ°¸¶¿¡ »ç¿ëµÈ µ¥ÀÌÅÍ Çü½Äº° Ä®·³ °Ç¼ö 
+-- 6. ìŠ¤í‚¤ë§ˆì— ì‚¬ìš©ëœ ë°ì´í„° í˜•ì‹ë³„ ì¹¼ëŸ¼ ê±´ìˆ˜ 
 select i.data_type, count(1) as total      
 from information_schema."columns" i
 where i.table_schema = '${schema_name}'
@@ -104,7 +104,7 @@ and exists (select 1 from pg_catalog.pg_stat_user_tables a where i.table_name = 
 group by 1 
 order by 2; 
 
--- 9. Å°, ÂüÁ¶Å° ¸®½ºÆ® 
+-- 9. í‚¤, ì°¸ì¡°í‚¤ ë¦¬ìŠ¤íŠ¸ 
 with pop as (
  SELECT 
     (conrelid::regclass)::varchar AS table_from,
@@ -117,7 +117,7 @@ select * from pop where table_from not like '%.%' and table_from != '-' and tabl
 order by 1 
 ;
 
--- 10. Å×ÀÌºíº° °Ç¼ö »êÁ¤ 
+-- 10. í…Œì´ë¸”ë³„ ê±´ìˆ˜ ì‚°ì • 
 with tbl as (
   select distinct i.table_schema, i.table_name 
   from information_schema."columns" i
@@ -136,7 +136,7 @@ SELECT
 FROM tbl ORDER BY 2 
 ;
 
--- 11. Å×ÀÌºíº° Ä®·³Çü½ÄÀÌ NullÀÌ ¾Æ´Ñ µ¥ÀÌÅÍ °Ç¼ö º¸±â - Not Null Ä®·³ 
+-- 11. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼í˜•ì‹ì´ Nullì´ ì•„ë‹Œ ë°ì´í„° ê±´ìˆ˜ ë³´ê¸° - Not Null ì¹¼ëŸ¼ 
 with table_n as (
 select i.table_schema, i.table_name, i.ordinal_position, i.column_name, i.is_nullable, i.data_type, i.udt_name    
 from information_schema."columns" i
@@ -154,7 +154,7 @@ select table_name, column_name,
 from table_n    
 ;
 
--- 12 ³¯Â¥Çü½Ä Æ¯Á¤±â°£ ¹þ¾î³­ °Ç¼ö ±¸ÇÏ±â  
+-- 12 ë‚ ì§œí˜•ì‹ íŠ¹ì •ê¸°ê°„ ë²—ì–´ë‚œ ê±´ìˆ˜ êµ¬í•˜ê¸°  
 with table_n as ( 
 select i.table_schema, i.table_name, i.ordinal_position, i.column_name, i.is_nullable, i.data_type, i.udt_name    
 from information_schema."columns" i
@@ -172,7 +172,7 @@ select table_name, column_name,
 from table_n
 ;
 
--- 13. Å×ÀÌºíº° Ä®·³Çü½Ä - time or date Ä®·³ 
+-- 13. í…Œì´ë¸”ë³„ ì¹¼ëŸ¼í˜•ì‹ - time or date ì¹¼ëŸ¼ 
 with table_n as ( 
 select i.table_schema, i.table_name, i.ordinal_position, i.column_name, i.is_nullable, i.data_type, i.udt_name    
 from information_schema."columns" i
@@ -198,7 +198,7 @@ select table_name, column_name,
 from table_n    
 ;
 
--- 14. Å×ÀÌºíº° ¼ýÀÚ Çü½Ä ÀÚ·á min max 
+-- 14. í…Œì´ë¸”ë³„ ìˆ«ìž í˜•ì‹ ìžë£Œ min max 
 with table_n as (
 	select i.table_schema, i.table_name, i.ordinal_position, i.column_name, i.is_nullable, i.data_type, i.udt_name    
 	from information_schema."columns" i
@@ -222,7 +222,7 @@ select table_name, column_name, is_nullable,
 from table_n     
 ; 
 
--- 15. Å×ÀÌºíº° ÂüÁ¶Å° °ËÁõ 
+-- 15. í…Œì´ë¸”ë³„ ì°¸ì¡°í‚¤ ê²€ì¦ 
 with pop as (
  SELECT 
     (conrelid::regclass)::varchar AS table_from,
@@ -248,11 +248,11 @@ where table_from not like '%.%' and table_from != '-' and table_from != 'admin' 
 order by 1 
 ;
 
--- 418°³ class Á¸Àç 
+-- 418ê°œ class ì¡´ìž¬ 
 select * from concept_class where concept_class_id like 'Ope%'
 order by 1;
 
--- ¼ö±â°ËÁõ·ê R001 ~ 
+-- ìˆ˜ê¸°ê²€ì¦ë£° R001 ~ 
 -- R001 
 select count(a.gender_concept_id) as total, 
        sum(case when exists (select 1 from concept b where b.concept_id = a.gender_concept_id and b.concept_class_id = 'Gender') then 1 end) as ruleCheck   
@@ -265,7 +265,7 @@ from person a;
 select count(a.ethnicity_concept_id) as total, 
        sum(case when exists (select 1 from concept b where b.concept_id = a.ethnicity_concept_id and b.concept_class_id = 'Ethnicity') then 1 end) as ruleCheck   
 from person a;
--- R004 :: ETL Àû¿ë ÇÊ¿äÇÔ 
+-- R004 :: ETL ì ìš© í•„ìš”í•¨ 
 select gender_concept_id, count(1) from person group by 1;
 select gender_source_value, count(1) from person group by 1; 
 -- R005 
@@ -293,7 +293,7 @@ from visit_occurrence a;
 select count(a.visit_type_concept_id) as total, 
        sum(case when exists (select 1 from concept b where b.concept_id = a.visit_type_concept_id and b.concept_class_id = 'Visit Type') then 1 end) as ruleCheck   
 from visit_occurrence a;
--- R011 'Place Of Service' Ç¥ÁØÄÚµå´Â º°µµ Á¸ÀçÇÏÁö ¾Ê±â ¶§¹®¿¡ LocationÀ¸·Î Á¤ÀÇ 
+-- R011 'Place Of Service' í‘œì¤€ì½”ë“œëŠ” ë³„ë„ ì¡´ìž¬í•˜ì§€ ì•Šê¸° ë•Œë¬¸ì— Locationìœ¼ë¡œ ì •ì˜ 
 select * from concept where concept_id = 4318944 ;
 -- R012 
 select count(a.domain_id) as total, 
@@ -357,18 +357,18 @@ where a.operator_concept_id != 0 ;
 select count(a.value_as_concept_id) as total, 
        sum(case when exists (select 1 from concept b where b.concept_id = a.value_as_concept_id and b.domain_id = 'Meas Value') then 1 end) as ruleCheck 
 from measurement a ;
--- R027 »ý³â¿ùÀÏ ³â È®ÀÎ 
+-- R027 ìƒë…„ì›”ì¼ ë…„ í™•ì¸ 
 select * from cdm.person where year_of_birth::text != to_char(birth_datetime, 'YYYY');
--- R028 »ý³â¿ùÀÏ ¿ù È®ÀÎ 
+-- R028 ìƒë…„ì›”ì¼ ì›” í™•ì¸ 
 select * from cdm.person where month_of_birth != to_char(birth_datetime, 'MM')::int;
--- R029 »ý³â¿ùÀÏ ÀÏ È®ÀÎ 
+-- R029 ìƒë…„ì›”ì¼ ì¼ í™•ì¸ 
 select * from cdm.person where day_of_birth != to_char(birth_datetime, 'DD')::int;
--- R030 »ç¸ÁÁ¤º¸ Áßº¹ È®ÀÎ 
+-- R030 ì‚¬ë§ì •ë³´ ì¤‘ë³µ í™•ì¸ 
 select person_id, count(1) from cdm.death group by 1 having count(1) > 1 ;
--- R031 ³»¿øÀÏÀÚ À¯È¿¼º È®ÀÎ 
+-- R031 ë‚´ì›ì¼ìž ìœ íš¨ì„± í™•ì¸ 
 select count(1) from cdm.visit_occurrence where visit_start_date > visit_end_date ;
--- R032 »ý³â¿ùÀÏ Á¡°Ë 
+-- R032 ìƒë…„ì›”ì¼ ì ê²€ 
 select count(1) from cdm.person where birth_datetime != birth_datetime::date;
--- R033 Áø´Ü°Ë»ç ¹üÀ§°ª °ËÁõ  
+-- R033 ì§„ë‹¨ê²€ì‚¬ ë²”ìœ„ê°’ ê²€ì¦  
 select count(1) from cdm.measurement where range_low > range_high;
 -- ---------------------------------------------
